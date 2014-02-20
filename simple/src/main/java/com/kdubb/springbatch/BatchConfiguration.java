@@ -21,6 +21,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import com.kdubb.springbatch.model.Person;
 import com.kdubb.springbatch.processor.PersonItemProcessor;
@@ -82,6 +85,16 @@ public class BatchConfiguration {
     }
     // end::jobstep[]
 
+    @Bean
+    public EmbeddedDatabase dataSource() throws Exception {
+    	return new EmbeddedDatabaseBuilder()
+	        .setType(EmbeddedDatabaseType.HSQL)
+	        .addScript("classpath:schema-all.sql")
+	        .addScript("classpath:org/springframework/batch/core/schema-drop-hsqldb.sql")
+	        .addScript("classpath:org/springframework/batch/core/schema-hsqldb.sql")
+	        .build();
+    }
+    
     @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);
